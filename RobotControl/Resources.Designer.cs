@@ -63,6 +63,16 @@ namespace RobotControl {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Globe_Connected_icon {
+            get {
+                object obj = ResourceManager.GetObject("Globe_Connected_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap mapka {
             get {
                 object obj = ResourceManager.GetObject("mapka", resourceCulture);

@@ -23,7 +23,15 @@ namespace RobotControl
 
         private void newRobotToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            CreateRobotDialog createDialog = new CreateRobotDialog();
+            CreateRobotDialog createDialog = new CreateRobotDialog("serial");
+            createDialog.map = map;
+            createDialog.ShowDialog();
+            Invalidate();
+        }
+
+        private void addRobotIPToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateRobotDialog createDialog = new CreateRobotDialog("ip");
             createDialog.map = map;
             createDialog.ShowDialog();
             Invalidate();
@@ -46,6 +54,12 @@ namespace RobotControl
             {
                 
             }
+        }
+
+        private void MainView_MouseClick(object sender, MouseEventArgs e)
+        {
+            map.Click(e);
+            Invalidate();
         }
     }
 }

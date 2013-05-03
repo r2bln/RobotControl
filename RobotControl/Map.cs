@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace RobotControl
 {
@@ -10,12 +11,11 @@ namespace RobotControl
         private int offsetY;
         private int width;
         private int height;
+        private Bitmap robotBmp = new Bitmap(Resources.Robot);
+
         public Bitmap bgMap;
-
-        List<Robot> robotsList = new List<Robot>(); 
-        Bitmap robotBmp = new Bitmap(Resources.Robot);
+        public List<Robot> robotsList = new List<Robot>(); 
         
-
         public Map()
         {
             offsetX = 0;
@@ -39,31 +39,106 @@ namespace RobotControl
             robotsList.Add(rb);
         }
 
+        public void Click(MouseEventArgs e)
+        {
+            var rlMouseX = e.X;
+            var rlMouseY = height - e.Y;
+
+            if (e.Button == MouseButtons.Left)
+            {
+                foreach (var robot in robotsList)
+                {
+                    var actualX = robot.x + offsetX - robotBmp.Width / 2;
+                    var actualY = height + offsetY - (robot.y + robotBmp.Height / 2);
+
+                    if ((rlMouseX > actualX && rlMouseY < actualY) && (rlMouseX < actualX + robotBmp.Width && rlMouseY < actualY + robotBmp.Height))
+                    {
+                        robot.selected = true;
+                    }
+                    else
+                        robot.selected = false;
+                }
+            }
+
+            else
+            {
+                foreach (var robot in robotsList)
+                {
+                    if (robot.selected)
+                    {
+                        robot.gtX = e.X;
+                        robot.gtY = e.Y;
+                        robot.SendData("Go to " + e.X + " " + e.Y);
+                    }
+                }
+            }
+        }
+
         public void Update(Graphics canvas)
         {
+            // Подкладываем полученную до этого карту под поле
             canvas.DrawImage(bgMap, offsetX, offsetY, width, height);
-            
-            //canvas.FillRectangle(new SolidBrush(Color.White), offsetX, offsetY, width, height);
             
             foreach (var robot in robotsList)
             {
+                // Координаты верхнего левого угла картинки робота
                 var actualX = robot.x + offsetX - robotBmp.Width/2;
                 var actualY = height + offsetY - (robot.y + robotBmp.Height/2);
 
-                canvas.DrawImage(robotBmp, actualX, actualY);
+                // Координаты центра робота
+                var centerX = robot.x + offsetX;
+                var centerY = height + offsetY - robot.y;
+
+                // Координаты метки
+                var markX = robot.obstRange * Math.Sin((robot.facing) * Math.PI / 180 ) + centerX;
+                var markY = -robot.obstRange * Math.Cos((robot.facing) * Math.PI / 180 ) + centerY;
+
+                // Поворачиваем робота
+                var tmpBmp = RotateImageByAngle(robotBmp, (float)robot.facing); // Пашет
+
+                // Рисуем робота и его центр
+                canvas.DrawImage(tmpBmp, actualX, actualY);
+                canvas.FillRectangle(new SolidBrush(Color.Red), centerX, centerY, 2, 2);
+
+                // Если на робота кликнули - рисуем рамку
+
+                if (robot.selected)
+                    canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
+
+                // Куда робот движется
+                canvas.DrawLine(new Pen(Color.Red), centerX, centerY, robot.gtX, robot.gtY);
+
+                // Выводим данные (так, для теста)
                 canvas.DrawString(robot.data, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.Black), actualX + 32, actualY);
-                canvas.DrawLine(new Pen(Color.Black, 2), actualX + robotBmp.Width/2 - 1, actualY - robot.obstRange, actualX + robotBmp.Width/2 + 1, actualY - robot.obstRange );
                 
-                // при повороте скорее всего работать не будет. Полярные координаты относительно телеги.
+                // Рисуем метку и линию до нее
+                canvas.FillRectangle(new SolidBrush(Color.Black), (float)markX, (float)markY, 2,2);
+                canvas.DrawLine(new Pen(Color.Red), centerX, centerY, (float)markX, (float)markY);
+                
+                // Сохраняем метку на карте
                 try
                 {
-                    bgMap.SetPixel(actualX + robotBmp.Width / 2 - offsetX, actualY - robot.obstRange - offsetY, Color.Black);
+                    bgMap.SetPixel((int)markX - offsetX, (int)markY - offsetY, Color.Black);
                 }
                 catch 
                 {
                     // Зашкалило.
                 }
             }
+        }
+
+
+        // Сниппет - поворачивает картинки
+
+        private static Bitmap RotateImageByAngle(System.Drawing.Image oldBitmap, float angle)
+        {
+            var newBitmap = new Bitmap(oldBitmap.Width, oldBitmap.Height);
+            var graphics = Graphics.FromImage(newBitmap);
+            graphics.TranslateTransform((float)oldBitmap.Width / 2, (float)oldBitmap.Height / 2);
+            graphics.RotateTransform(angle);
+            graphics.TranslateTransform(-(float)oldBitmap.Width / 2, -(float)oldBitmap.Height / 2);
+            graphics.DrawImage(oldBitmap, new Point(0, 0));
+            return newBitmap;
         }
     }
 }
