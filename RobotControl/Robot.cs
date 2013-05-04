@@ -3,7 +3,6 @@ using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Windows.Forms;
 
 namespace RobotControl
 {
@@ -13,10 +12,13 @@ namespace RobotControl
         public int y;
         public int gtX;
         public int gtY;
+        public int id;
         public int obstRange;
         public string data;
         public double facing;
         public bool selected;
+        public bool connectionFailed;
+        public string connection;
 
         private byte[] buf;
         private int ipPort;
@@ -27,6 +29,8 @@ namespace RobotControl
         private SerialPort port;
         private Socket s;
 
+        // Всякие конструкторы.
+
         public Robot()
         {
             x = 0;
@@ -34,11 +38,6 @@ namespace RobotControl
             dist1 = 0;
             dist2 = 0;
             facing = 0;
-        }
-
-        ~Robot()
-        {
-            //port.Close();
         }
 
         public Robot(int _x, int _y, double _dist1, double _dist2, double _facing, string _portName)
@@ -49,6 +48,9 @@ namespace RobotControl
             dist2 = _dist2;
             facing = _facing;
             portName = _portName;
+            gtX = 32;
+            gtY = 32;
+            connection = portName;
         }
 
         public Robot(int _x, int _y, double _dist1, double _dist2, double _facing, string _address, int _port)
@@ -60,25 +62,56 @@ namespace RobotControl
             facing = _facing;
             address = _address;
             ipPort = _port;
+            gtX = 32;
+            gtY = 32;
+            connection = address + ":" + ipPort.ToString();
+        }
+
+        public void Disconnect()
+        {
+            // Вызывается при удалении робота.
+            // Смотрим как были подключены, и отключаемся.
+
+            if (portName != null)
+            {
+                port.Close();
+            }
+            else if (address != null)
+            {
+                s.Close();
+            }
         }
 
         public void ConnectSerial()
         {
+            // Открываем поледовательный порт к реальному роботу
+
             port = new SerialPort(portName, 9600, Parity.None);
             port.Open();
+
+            // Подписываемся на событие приема данных
+
             port.DataReceived += port_DataReceived;
         }
 
         public void ConnectIp()
         {
+            // Инитаем сокет
+            // Подключаемся к виртуальному роботу (МБ все таки серьезней сделать сервак с покатушками?)
             s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             s.Connect(new IPEndPoint(IPAddress.Parse(address), ipPort));
+
+            // Инитаем буфер для приема данных
             buf = new byte[32];
+
+            // начинаем асинхронно ждать данных
             s.BeginReceive(buf, 0, 32, SocketFlags.None, OnDataRecieved, null);
         }
 
         private void OnDataRecieved(IAsyncResult ar)
         {
+            // Пришли данные. Пытаемся распаковать и ждем дальше.
+            // SocketType.Stream какаято муть иногда слипается ногда не доходит 
 
             try
             {
@@ -106,20 +139,29 @@ namespace RobotControl
             }
             catch
             {
-
+                // Сокет таки не отвалился и все еще открыт, либо сервак лег
+                connectionFailed = true;
+                s.Close();
             }
-            
-            
         }
 
         public void SendData(string msg)
         {
-            s.Send(Encoding.ASCII.GetBytes(msg));
+            // Посылаем данные виртуальному роботу
+
+            if (s != null && s.Connected)
+            {
+                s.Send(Encoding.ASCII.GetBytes(msg));
+            }
+            else if (port != null && port.IsOpen)
+            {
+                port.WriteLine(msg);
+            }
         }
 
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            // Посылка dist1,dist2,cm,action
+            // Посылка dist1,dist2,cm,facing
             try
             {
                 // Иногда приходит не целиком и валится. Хз почиму. Серийник же...
@@ -131,7 +173,7 @@ namespace RobotControl
             }
             catch
             {
-
+                connectionFailed = true;
             }
         }
     }

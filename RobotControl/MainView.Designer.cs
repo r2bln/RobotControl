@@ -37,6 +37,9 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.Remove = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -108,11 +111,42 @@
             this.StatusLabel1.Size = new System.Drawing.Size(135, 17);
             this.StatusLabel1.Text = "Приложение запущено...";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(538, 32);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(140, 17);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Выбранный объект:";
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(541, 61);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(239, 95);
+            this.listBox1.TabIndex = 3;
+            // 
+            // Remove
+            // 
+            this.Remove.Location = new System.Drawing.Point(658, 162);
+            this.Remove.Name = "Remove";
+            this.Remove.Size = new System.Drawing.Size(122, 23);
+            this.Remove.TabIndex = 4;
+            this.Remove.Text = "Удалить робота";
+            this.Remove.UseVisualStyleBackColor = true;
+            this.Remove.Click += new System.EventHandler(this.Remove_Click);
+            // 
             // MainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 573);
+            this.Controls.Add(this.Remove);
+            this.Controls.Add(this.listBox1);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.DoubleBuffered = true;
@@ -142,7 +176,10 @@
         private System.Windows.Forms.ToolStripMenuItem saveMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addRobotIPToolStripMenuItem;
         public System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel StatusLabel1;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Button Remove;
+        public System.Windows.Forms.ToolStripStatusLabel StatusLabel1;
     }
 }
 

@@ -32,8 +32,6 @@ namespace RobotControl
                     ports.Items.Add("192.168.1.117:666");
                     break;
             }
-
-            
         }
 
         private void Create_Click(object sender, EventArgs e)
@@ -58,7 +56,6 @@ namespace RobotControl
                         this.Close();
                         break;
                 }
-                
             }
             catch (Exception)
             {

@@ -11,10 +11,12 @@ namespace RobotControl
         private int offsetY;
         private int width;
         private int height;
+        private MainView parent;
+        private List<Robot> robotsList = new List<Robot>();
         private Bitmap robotBmp = new Bitmap(Resources.Robot);
 
         public Bitmap bgMap;
-        public List<Robot> robotsList = new List<Robot>(); 
+        
         
         public Map()
         {
@@ -22,8 +24,9 @@ namespace RobotControl
             offsetY = 0;
         }
 
-        public Map(int _offsetX, int _offsetY, int _width, int _height)
+        public Map(int _offsetX, int _offsetY, int _width, int _height, MainView _parent)
         {
+            parent = _parent;
             offsetX = _offsetX;
             offsetY = _offsetY;
             width = _width;
@@ -39,35 +42,60 @@ namespace RobotControl
             robotsList.Add(rb);
         }
 
+        public void RemoveRobot()
+        {
+            foreach (var robot in robotsList)
+            {
+                if (robot.selected)
+                {
+                    robot.Disconnect();
+                    robotsList.Remove(robot);
+                    parent.listBox1.Items.Clear();
+                    break;
+                }
+            }
+        }
+
         public void Click(MouseEventArgs e)
         {
-            var rlMouseX = e.X;
-            var rlMouseY = height - e.Y;
-
+            // Обрабатываем клик на поле.
+            // Левая кнопка мыши - выделение
             if (e.Button == MouseButtons.Left)
             {
                 foreach (var robot in robotsList)
                 {
+                    // Смотрим координаты мыши и всех роботов.
+                    // Не попали ли в кого?
                     var actualX = robot.x + offsetX - robotBmp.Width / 2;
                     var actualY = height + offsetY - (robot.y + robotBmp.Height / 2);
 
-                    if ((rlMouseX > actualX && rlMouseY < actualY) && (rlMouseX < actualX + robotBmp.Width && rlMouseY < actualY + robotBmp.Height))
+                    if ((e.X > actualX && e.Y > actualY) &&
+                        (e.X < actualX + robotBmp.Width && e.Y < actualY + robotBmp.Height))
                     {
+                        // Попали, он выделен.
                         robot.selected = true;
                     }
                     else
-                        robot.selected = false;
+                    {
+                        // Не попали, он не выделен.
+                        robot.selected = false; 
+                        parent.listBox1.Items.Clear();
+                    }
                 }
             }
 
+            // Правая кнопка мыши - движение.
             else
             {
                 foreach (var robot in robotsList)
-                {
+                {                    
                     if (robot.selected)
                     {
+                        // Робот выделен - приказываем ему.
                         robot.gtX = e.X;
                         robot.gtY = e.Y;
+
+                        // Отправляем посылку.
                         robot.SendData("Go to " + e.X + " " + e.Y);
                     }
                 }
@@ -103,13 +131,33 @@ namespace RobotControl
                 // Если на робота кликнули - рисуем рамку
 
                 if (robot.selected)
+                {
                     canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
+                    parent.listBox1.Items.Clear();
+                    parent.listBox1.Items.Add("X: " + robot.x.ToString());
+                    parent.listBox1.Items.Add("Y: " + robot.y.ToString());
+                    parent.listBox1.Items.Add("Дальномер: " + robot.obstRange.ToString());
+                    parent.listBox1.Items.Add("Азимут: " + robot.facing.ToString());
+                    parent.listBox1.Items.Add("Соединение: " + robot.connection);
+                    if (!robot.connectionFailed)
+                        parent.listBox1.Items.Add("Активно...");
+                    else
+                        parent.listBox1.Items.Add("РАЗОРВАНО!");
+                }
+
+                if (robot.connectionFailed)
+                {
+                    parent.StatusLabel1.Text = "Соединение разорвано...";
+                    canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
+                    canvas.DrawLine(new Pen(Color.Red), actualX, actualY, actualX + robotBmp.Width, actualY + robotBmp.Height);
+                    canvas.DrawLine(new Pen(Color.Red), actualX + robotBmp.Width, actualY, actualX, actualY + robotBmp.Height);
+                }
 
                 // Куда робот движется
                 canvas.DrawLine(new Pen(Color.Red), centerX, centerY, robot.gtX, robot.gtY);
 
-                // Выводим данные (так, для теста)
-                canvas.DrawString(robot.data, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.Black), actualX + 32, actualY);
+                // Выводим данные (так, для теста)              
+                //canvas.DrawString(robot.data, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.Black), actualX + 32, actualY);
                 
                 // Рисуем метку и линию до нее
                 canvas.FillRectangle(new SolidBrush(Color.Black), (float)markX, (float)markY, 2,2);
@@ -126,7 +174,6 @@ namespace RobotControl
                 }
             }
         }
-
 
         // Сниппет - поворачивает картинки
 

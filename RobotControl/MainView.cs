@@ -7,12 +7,13 @@ namespace RobotControl
 {
     public partial class MainView : Form
     {
-        Map map = new Map(32, 32, 500, 500);
+        private Map map;
 
         public MainView()
         {
             InitializeComponent();
             CheckForIllegalCrossThreadCalls = false;
+            map = new Map(32, 32, 500, 500, this);
         }
 
         private void MainView_Paint(object sender, PaintEventArgs e)
@@ -60,6 +61,11 @@ namespace RobotControl
         {
             map.Click(e);
             Invalidate();
+        }
+
+        private void Remove_Click(object sender, EventArgs e)
+        {
+            map.RemoveRobot();
         }
     }
 }
