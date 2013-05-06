@@ -3,6 +3,7 @@ using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Windows.Forms;
 
 namespace RobotControl
 {
@@ -29,8 +30,14 @@ namespace RobotControl
         private SerialPort port;
         private Socket s;
 
-        // Всякие конструкторы.
+        // Делегат события OnConnectionlost
+        public delegate void RobotDelegate(Robot sender, EventArgs e);
 
+        // Создаем событие с этим делегатом
+        public event RobotDelegate OnConnectionLost;
+
+
+        // Всякие конструкторы.
         public Robot()
         {
             x = 0;
@@ -70,13 +77,22 @@ namespace RobotControl
         public void Disconnect()
         {
             // Вызывается при удалении робота.
-            // Смотрим как были подключены, и отключаемся.
+            // Отключаемся.
 
-            if (portName != null)
+            /* Я хуй знает почему это не работает....
+            if (port != null && port.IsOpen)
             {
                 port.Close();
             }
-            else if (address != null)
+            */
+ 
+            try
+            {
+                port.Close();
+            }
+            catch {}
+
+            if (s != null && s.Connected)
             {
                 s.Close();
             }
@@ -135,11 +151,14 @@ namespace RobotControl
 
             try
             {
+                // Слушаем дальше
                 s.BeginReceive(buf, 0, 32, SocketFlags.None, OnDataRecieved, null);
             }
             catch
             {
                 // Сокет таки не отвалился и все еще открыт, либо сервак лег
+                // Кидаем ивент
+                OnConnectionLost(this, null);
                 connectionFailed = true;
                 s.Close();
             }
@@ -151,11 +170,28 @@ namespace RobotControl
 
             if (s != null && s.Connected)
             {
-                s.Send(Encoding.ASCII.GetBytes(msg));
+                try
+                {
+                    s.Send(Encoding.ASCII.GetBytes(msg));
+                }
+                catch
+                {
+                    OnConnectionLost(this, null);
+                    connectionFailed = true;
+                }
             }
+
             else if (port != null && port.IsOpen)
             {
-                port.WriteLine(msg);
+                try
+                {
+                    port.WriteLine(msg);
+                }
+                catch
+                {
+                    OnConnectionLost(this, null);
+                    connectionFailed = true;
+                }
             }
         }
 
@@ -173,6 +209,7 @@ namespace RobotControl
             }
             catch
             {
+                OnConnectionLost(this, null);
                 connectionFailed = true;
             }
         }

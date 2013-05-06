@@ -50,6 +50,7 @@ namespace RobotControl
                 SaveFileDialog foo = new SaveFileDialog();
                 foo.ShowDialog();
                 map.bgMap.Save(foo.FileName, ImageFormat.Png);
+                StatusLabel1.Text = "Карта сохранена";
             }
             catch
             {
@@ -66,6 +67,11 @@ namespace RobotControl
         private void Remove_Click(object sender, EventArgs e)
         {
             map.RemoveRobot();
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            map.CheckSerialConnectons();
         }
     }
 }

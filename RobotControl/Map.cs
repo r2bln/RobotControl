@@ -14,6 +14,7 @@ namespace RobotControl
         private MainView parent;
         private List<Robot> robotsList = new List<Robot>();
         private Bitmap robotBmp = new Bitmap(Resources.Robot);
+        private int id;
 
         public Bitmap bgMap;
         
@@ -31,6 +32,7 @@ namespace RobotControl
             offsetY = _offsetY;
             width = _width;
             height = _height;
+            id = 0;
             bgMap = new Bitmap(width, height);
             for (int i = 0 ; i < width; i++)
                 for (int j = 0; j < height; j++)
@@ -39,7 +41,45 @@ namespace RobotControl
 
         public void AddRobot(Robot rb)
         {
+            // Добавляем робота в список на карте
             robotsList.Add(rb);
+
+            // Присваиваем ему id
+            rb.id = id;
+            id++;
+
+            // Отписываемся в статус бар
+            parent.StatusLabel1.Text = "Робот " + rb.id + " добавлен...";
+
+            // Подписываемся на ивент дисконнекта
+            rb.OnConnectionLost += rb_OnConnectionLost;
+        }
+
+        void rb_OnConnectionLost(Robot sender, EventArgs e)
+        {
+            // Обрабатываем дисконнект робота
+
+            parent.StatusLabel1.Text = "Соединение с роботом " + sender.id + " разорвано...";
+        }
+
+        // Грязный хак. Оооочень.
+
+        public void CheckSerialConnectons()
+        {
+            foreach (var robot in robotsList)
+            {
+                if (robot.connection[0] == 'C' || robot.connection[0] == 'c')
+                {
+                    try
+                    {
+                        robot.SendData(" ");
+                    }
+                    catch
+                    {
+                        robot.connectionFailed = true;
+                    }
+                }
+            }
         }
 
         public void RemoveRobot()
@@ -51,6 +91,7 @@ namespace RobotControl
                     robot.Disconnect();
                     robotsList.Remove(robot);
                     parent.listBox1.Items.Clear();
+                    parent.StatusLabel1.Text = "Робот " + robot.id + " удален...";
                     break;
                 }
             }
@@ -74,6 +115,7 @@ namespace RobotControl
                     {
                         // Попали, он выделен.
                         robot.selected = true;
+                        parent.StatusLabel1.Text = "Робот " + robot.id + " выделен...";
                     }
                     else
                     {
@@ -102,6 +144,8 @@ namespace RobotControl
             }
         }
 
+
+        // Основной Loop рисования вызывается постоянно каждую сек
         public void Update(Graphics canvas)
         {
             // Подкладываем полученную до этого карту под поле
@@ -134,6 +178,7 @@ namespace RobotControl
                 {
                     canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
                     parent.listBox1.Items.Clear();
+                    parent.listBox1.Items.Add("Номер: " + robot.id);
                     parent.listBox1.Items.Add("X: " + robot.x.ToString());
                     parent.listBox1.Items.Add("Y: " + robot.y.ToString());
                     parent.listBox1.Items.Add("Дальномер: " + robot.obstRange.ToString());
@@ -147,7 +192,7 @@ namespace RobotControl
 
                 if (robot.connectionFailed)
                 {
-                    parent.StatusLabel1.Text = "Соединение разорвано...";
+                    // Рисуем рамку вокруг робота и крест (Х_х)
                     canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
                     canvas.DrawLine(new Pen(Color.Red), actualX, actualY, actualX + robotBmp.Width, actualY + robotBmp.Height);
                     canvas.DrawLine(new Pen(Color.Red), actualX + robotBmp.Width, actualY, actualX, actualY + robotBmp.Height);
@@ -159,19 +204,25 @@ namespace RobotControl
                 // Выводим данные (так, для теста)              
                 //canvas.DrawString(robot.data, new Font(FontFamily.GenericSansSerif, 10), new SolidBrush(Color.Black), actualX + 32, actualY);
                 
-                // Рисуем метку и линию до нее
-                canvas.FillRectangle(new SolidBrush(Color.Black), (float)markX, (float)markY, 2,2);
-                canvas.DrawLine(new Pen(Color.Red), centerX, centerY, (float)markX, (float)markY);
+                // В разумных ли приделах показания дальномера?
+                if (robot.obstRange > 5 && robot.obstRange < 150)
+                {
+                    // Рисуем метку и линию до нее
+                    canvas.FillRectangle(new SolidBrush(Color.Black), (float)markX, (float)markY, 2,2);
+                    canvas.DrawLine(new Pen(Color.Red), centerX, centerY, (float)markX, (float)markY);
                 
-                // Сохраняем метку на карте
-                try
-                {
-                    bgMap.SetPixel((int)markX - offsetX, (int)markY - offsetY, Color.Black);
+                    // Сохраняем метку на карте
+                
+                    try
+                    {
+                        bgMap.SetPixel((int)markX - offsetX, (int)markY - offsetY, Color.Black);
+                    }
+                    catch 
+                    {
+                        // Зашкалило.
+                    }
                 }
-                catch 
-                {
-                    // Зашкалило.
-                }
+                
             }
         }
 

@@ -40,6 +40,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.Remove = new System.Windows.Forms.Button();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -126,18 +127,24 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(541, 61);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(239, 95);
+            this.listBox1.Size = new System.Drawing.Size(239, 108);
             this.listBox1.TabIndex = 3;
             // 
             // Remove
             // 
-            this.Remove.Location = new System.Drawing.Point(658, 162);
+            this.Remove.Location = new System.Drawing.Point(658, 182);
             this.Remove.Name = "Remove";
             this.Remove.Size = new System.Drawing.Size(122, 23);
             this.Remove.TabIndex = 4;
             this.Remove.Text = "Удалить робота";
             this.Remove.UseVisualStyleBackColor = true;
             this.Remove.Click += new System.EventHandler(this.Remove_Click);
+            // 
+            // timer2
+            // 
+            this.timer2.Enabled = true;
+            this.timer2.Interval = 3000;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
             // MainView
             // 
@@ -180,6 +187,7 @@
         public System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button Remove;
         public System.Windows.Forms.ToolStripStatusLabel StatusLabel1;
+        private System.Windows.Forms.Timer timer2;
     }
 }
 
