@@ -38,11 +38,6 @@ namespace RobotControl
             Invalidate();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            Invalidate();
-        }
-
         private void MainView_MouseClick(object sender, MouseEventArgs e)
         {
             map.Click(e);

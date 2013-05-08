@@ -33,16 +33,15 @@
             this.actionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newRobotToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.addRobotIPToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сlearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMapToolStripMenuItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.StatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.label1 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.Remove = new System.Windows.Forms.Button();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
-            this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.сlearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMapToolStripMenuItemToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -83,11 +82,29 @@
             this.addRobotIPToolStripMenuItem.Text = "Добавить Робота IP";
             this.addRobotIPToolStripMenuItem.Click += new System.EventHandler(this.addRobotIPToolStripMenuItem_Click);
             // 
-            // timer1
+            // mapToolStripMenuItem
             // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 500;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.сlearToolStripMenuItem,
+            this.saveMapToolStripMenuItemToolStripMenuItem});
+            this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
+            this.mapToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
+            this.mapToolStripMenuItem.Text = "Карта";
+            // 
+            // сlearToolStripMenuItem
+            // 
+            this.сlearToolStripMenuItem.Name = "сlearToolStripMenuItem";
+            this.сlearToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.сlearToolStripMenuItem.Text = "Очистить карту";
+            this.сlearToolStripMenuItem.Click += new System.EventHandler(this.сlearToolStripMenuItem_Click);
+            // 
+            // saveMapToolStripMenuItemToolStripMenuItem
+            // 
+            this.saveMapToolStripMenuItemToolStripMenuItem.Image = global::RobotControl.Resources.mapka;
+            this.saveMapToolStripMenuItemToolStripMenuItem.Name = "saveMapToolStripMenuItemToolStripMenuItem";
+            this.saveMapToolStripMenuItemToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.saveMapToolStripMenuItemToolStripMenuItem.Text = "Сохранить карту";
+            this.saveMapToolStripMenuItemToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItemToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -140,30 +157,6 @@
             this.timer2.Interval = 3000;
             this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
             // 
-            // mapToolStripMenuItem
-            // 
-            this.mapToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.сlearToolStripMenuItem,
-            this.saveMapToolStripMenuItemToolStripMenuItem});
-            this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
-            this.mapToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
-            this.mapToolStripMenuItem.Text = "Карта";
-            // 
-            // сlearToolStripMenuItem
-            // 
-            this.сlearToolStripMenuItem.Name = "сlearToolStripMenuItem";
-            this.сlearToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.сlearToolStripMenuItem.Text = "Очистить карту";
-            this.сlearToolStripMenuItem.Click += new System.EventHandler(this.сlearToolStripMenuItem_Click);
-            // 
-            // saveMapToolStripMenuItemToolStripMenuItem
-            // 
-            this.saveMapToolStripMenuItemToolStripMenuItem.Image = global::RobotControl.Resources.mapka;
-            this.saveMapToolStripMenuItemToolStripMenuItem.Name = "saveMapToolStripMenuItemToolStripMenuItem";
-            this.saveMapToolStripMenuItemToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.saveMapToolStripMenuItemToolStripMenuItem.Text = "Сохранить карту";
-            this.saveMapToolStripMenuItemToolStripMenuItem.Click += new System.EventHandler(this.saveMapToolStripMenuItemToolStripMenuItem_Click);
-            // 
             // MainView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -197,7 +190,6 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem actionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newRobotToolStripMenuItem;
-        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem addRobotIPToolStripMenuItem;
         public System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.Label label1;
