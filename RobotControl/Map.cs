@@ -39,6 +39,17 @@ namespace RobotControl
                     bgMap.SetPixel(i,j,Color.White);
         }
 
+        public void Clear()
+        {
+            if (bgMap != null)
+            {
+                for (int i = 0; i < width; i++)
+                    for (int j = 0; j < height; j++)
+                        bgMap.SetPixel(i, j, Color.White);
+            }
+            parent.Invalidate();
+        }
+
         public void AddRobot(Robot rb)
         {
             // Добавляем робота в список на карте
@@ -53,6 +64,14 @@ namespace RobotControl
 
             // Подписываемся на ивент дисконнекта
             rb.OnConnectionLost += rb_OnConnectionLost;
+
+            // Подписываемся на ивент пришедших данных
+            rb.OnDataRecievedExternal += rb_OnDataRecievedExternal;
+        }
+
+        void rb_OnDataRecievedExternal(Robot sender, EventArgs e)
+        {
+            parent.Invalidate();
         }
 
         void rb_OnConnectionLost(Robot sender, EventArgs e)
@@ -222,7 +241,6 @@ namespace RobotControl
                         // Зашкалило.
                     }
                 }
-                
             }
         }
 

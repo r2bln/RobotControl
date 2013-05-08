@@ -43,25 +43,10 @@ namespace RobotControl
             Invalidate();
         }
 
-        private void saveMapToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SaveFileDialog foo = new SaveFileDialog();
-                foo.ShowDialog();
-                map.bgMap.Save(foo.FileName, ImageFormat.Png);
-                StatusLabel1.Text = "Карта сохранена";
-            }
-            catch
-            {
-                
-            }
-        }
-
         private void MainView_MouseClick(object sender, MouseEventArgs e)
         {
             map.Click(e);
-            Invalidate();
+            //Invalidate();
         }
 
         private void Remove_Click(object sender, EventArgs e)
@@ -72,6 +57,26 @@ namespace RobotControl
         private void timer2_Tick(object sender, EventArgs e)
         {
             map.CheckSerialConnectons();
+        }
+
+        private void saveMapToolStripMenuItemToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveFileDialog foo = new SaveFileDialog();
+                foo.ShowDialog();
+                map.bgMap.Save(foo.FileName, ImageFormat.Png);
+                StatusLabel1.Text = "Карта сохранена";
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void сlearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            map.Clear();
         }
     }
 }

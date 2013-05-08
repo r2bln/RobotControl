@@ -35,6 +35,7 @@ namespace RobotControl
 
         // Создаем событие с этим делегатом
         public event RobotDelegate OnConnectionLost;
+        public event RobotDelegate OnDataRecievedExternal;
 
 
         // Всякие конструкторы.
@@ -128,6 +129,8 @@ namespace RobotControl
         {
             // Пришли данные. Пытаемся распаковать и ждем дальше.
             // SocketType.Stream какаято муть иногда слипается ногда не доходит 
+
+            OnDataRecievedExternal(this, null);
 
             try
             {
