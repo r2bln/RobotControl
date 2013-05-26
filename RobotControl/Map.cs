@@ -79,6 +79,7 @@ namespace RobotControl
             // Обрабатываем дисконнект робота
 
             parent.StatusLabel1.Text = "Соединение с роботом " + sender.id + " разорвано...";
+            parent.Invalidate();
         }
 
         // Грязный хак. Оооочень.
@@ -114,6 +115,7 @@ namespace RobotControl
                     break;
                 }
             }
+            parent.Invalidate();
         }
 
         public void Click(MouseEventArgs e)
@@ -161,6 +163,8 @@ namespace RobotControl
                     }
                 }
             }
+
+            parent.Invalidate();
         }
 
 

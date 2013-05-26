@@ -72,6 +72,19 @@ namespace RobotControl
         private void сlearToolStripMenuItem_Click(object sender, EventArgs e)
         {
             map.Clear();
+            StatusLabel1.Text = "Карта очищена";
+        }
+
+        private void loadMapToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog foo = new OpenFileDialog();
+                foo.ShowDialog();
+                map.bgMap = new Bitmap(foo.FileName);
+                StatusLabel1.Text = "Карта загружена";
+            }
+            catch {}
         }
     }
 }
