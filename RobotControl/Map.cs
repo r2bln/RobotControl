@@ -181,7 +181,7 @@ namespace RobotControl
                         robot.gtY = e.Y;
 
                         // Отправляем посылку.
-                        robot.SendData("Go to " + e.X + " " + e.Y);
+                        robot.SendData(e.X + "," + e.Y);
                     }
                 }
             }
