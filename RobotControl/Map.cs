@@ -118,6 +118,28 @@ namespace RobotControl
             parent.Invalidate();
         }
 
+        public void Reconnect()
+        {
+            foreach (var robot in robotsList)
+            {
+                if (robot.selected)
+                {
+                    try
+                    {
+                        robot.ConnectIp();
+                        robot.connectionFailed = false;
+                        parent.Invalidate();
+                        parent.Reconnect.Enabled = false;
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Не удалось переподключиться.");
+                    }
+                }
+                    
+            }
+        }
+
         public void Click(MouseEventArgs e)
         {
             // Обрабатываем клик на поле.
@@ -219,6 +241,7 @@ namespace RobotControl
                     canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
                     canvas.DrawLine(new Pen(Color.Red), actualX, actualY, actualX + robotBmp.Width, actualY + robotBmp.Height);
                     canvas.DrawLine(new Pen(Color.Red), actualX + robotBmp.Width, actualY, actualX, actualY + robotBmp.Height);
+                    parent.Reconnect.Enabled = true;
                 }
 
                 // Куда робот движется

@@ -86,5 +86,10 @@ namespace RobotControl
             }
             catch {}
         }
+
+        private void Reconnect_Click(object sender, EventArgs e)
+        {
+            map.Reconnect();
+        }
     }
 }
