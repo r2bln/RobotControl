@@ -3,6 +3,7 @@ using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Drawing;
 
 namespace RobotControl
 {
@@ -28,6 +29,7 @@ namespace RobotControl
         private string portName;
         private SerialPort port;
         private Socket s;
+        private Bitmap robotBmp = new Bitmap(Resources.Robot);
 
         // Делегат события OnConnectionlost
         public delegate void RobotDelegate(Robot sender, EventArgs e);
@@ -74,6 +76,80 @@ namespace RobotControl
             connection = address + ":" + ipPort.ToString();
         }
 
+        public void Draw(Graphics canvas, Map map)
+        {
+            // Координаты верхнего левого угла картинки робота
+            var actualX = x + map.offsetX - robotBmp.Width / 2;
+            var actualY = map.height + map.offsetY - (y + robotBmp.Height / 2);
+
+            // Координаты центра робота
+            var centerX = x + map.offsetX;
+            var centerY = map.height + map.offsetY - y;
+
+            // Координаты метки
+            var markX = obstRange * Math.Sin((facing) * Math.PI / 180) + centerX;
+            var markY = -obstRange * Math.Cos((facing) * Math.PI / 180) + centerY;
+
+            // Поворачиваем робота
+            var tmpBmp = RotateImageByAngle(robotBmp, (float)facing); // Пашет
+
+            // Рисуем робота и его центр
+            canvas.DrawImage(tmpBmp, actualX, actualY);
+            canvas.FillRectangle(new SolidBrush(Color.Red), centerX, centerY, 2, 2);
+
+            // Если на робота кликнули - рисуем рамку и выводим данные о нем на форму
+
+            if (selected)
+            {
+                canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
+                if (map.parent != null)
+                {
+                    map.parent.listBox1.Items.Clear();
+                    map.parent.listBox1.Items.Add("Номер: " + id);
+                    map.parent.listBox1.Items.Add("X: " + x.ToString());
+                    map.parent.listBox1.Items.Add("Y: " + y.ToString());
+                    map.parent.listBox1.Items.Add("Дальномер: " + obstRange.ToString());
+                    map.parent.listBox1.Items.Add("Азимут: " + facing.ToString());
+                    map.parent.listBox1.Items.Add("Соединение: " + connection);
+                    if (!connectionFailed)
+                        map.parent.listBox1.Items.Add("Активно...");
+                    else
+                        map.parent.listBox1.Items.Add("РАЗОРВАНО!");
+                } 
+            }
+
+            if (connectionFailed)
+            {
+                // Рисуем рамку вокруг робота и крест (Х_х)
+                canvas.DrawRectangle(new Pen(Color.Red), actualX, actualY, robotBmp.Width, robotBmp.Height);
+                canvas.DrawLine(new Pen(Color.Red), actualX, actualY, actualX + robotBmp.Width, actualY + robotBmp.Height);
+                canvas.DrawLine(new Pen(Color.Red), actualX + robotBmp.Width, actualY, actualX, actualY + robotBmp.Height);
+                map.parent.Reconnect.Enabled = true;
+            }
+
+            // Куда робот движется
+            canvas.DrawLine(new Pen(Color.Red), centerX, centerY, gtX, gtY);
+
+            // В разумных ли приделах показания дальномера?
+            if (obstRange > 5 && obstRange < 150)
+            {
+                // Рисуем метку и линию до нее
+                canvas.FillRectangle(new SolidBrush(Color.Black), (float)markX, (float)markY, 2, 2);
+                canvas.DrawLine(new Pen(Color.Red), centerX, centerY, (float)markX, (float)markY);
+
+                // Сохраняем метку на карте
+
+                try
+                {
+                    map.bgMap.SetPixel((int)markX - map.offsetX, (int)markY - map.offsetY, Color.Black);
+                }
+                catch
+                {
+                    // Зашкалило.
+                }
+            }
+        }
+
         public void Disconnect()
         {
             // Вызывается при удалении робота.
@@ -85,12 +161,12 @@ namespace RobotControl
                 port.Close();
             }
             */
- 
+
             try
             {
                 port.Close();
             }
-            catch {}
+            catch { }
 
             if (s != null && s.Connected)
             {
@@ -214,6 +290,17 @@ namespace RobotControl
                 OnConnectionLost(this, null);
                 connectionFailed = true;
             }
+        }
+
+        private static Bitmap RotateImageByAngle(System.Drawing.Image oldBitmap, float angle)
+        {
+            var newBitmap = new Bitmap(oldBitmap.Width, oldBitmap.Height);
+            var graphics = Graphics.FromImage(newBitmap);
+            graphics.TranslateTransform((float)oldBitmap.Width / 2, (float)oldBitmap.Height / 2);
+            graphics.RotateTransform(angle);
+            graphics.TranslateTransform(-(float)oldBitmap.Width / 2, -(float)oldBitmap.Height / 2);
+            graphics.DrawImage(oldBitmap, new Point(0, 0));
+            return newBitmap;
         }
     }
 }
