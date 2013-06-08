@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO.Ports;
 using System.Net;
 using System.Net.Sockets;
@@ -9,8 +10,10 @@ namespace RobotControl
 {
     public class Robot
     {
-        public int x;
-        public int y;
+        public float x;
+        public float y;
+        private float xBuf;
+        private float yBuf;
         public int gtX;
         public int gtY;
         public int id;
@@ -53,6 +56,8 @@ namespace RobotControl
         {
             x = _x;
             y = _y;
+            xBuf = _x;
+            yBuf = _y;
             dist1 = _dist1;
             dist2 = _dist2;
             facing = _facing;
@@ -66,6 +71,8 @@ namespace RobotControl
         {
             x = _x;
             y = _y;
+            xBuf = _x;
+            yBuf = _y;
             dist1 = _dist1;
             dist2 = _dist2;
             facing = _facing;
@@ -79,8 +86,8 @@ namespace RobotControl
         public void Draw(Graphics canvas, Map map)
         {
             // Координаты верхнего левого угла картинки робота
-            var actualX = x + map.offsetX - robotBmp.Width / 2;
-            var actualY = map.height + map.offsetY - (y + robotBmp.Height / 2);
+            var actualX = x + map.offsetX - robotBmp.Width / 2f;
+            var actualY = map.height + map.offsetY - (y + robotBmp.Height / 2f);
 
             // Координаты центра робота
             var centerX = x + map.offsetX;
@@ -213,9 +220,16 @@ namespace RobotControl
                 // Нужен СДЦ.
 
                 data = Encoding.ASCII.GetString(buf);
-                var dataArr = data.Split(',');
-                x = Convert.ToInt32(dataArr[0]);
-                y = Convert.ToInt32(dataArr[1]);
+                var dataArr = data.Split('|');
+                xBuf = float.Parse(dataArr[0], CultureInfo.InvariantCulture.NumberFormat);
+                yBuf = float.Parse(dataArr[1], CultureInfo.InvariantCulture.NumberFormat);
+
+                if (Math.Abs(x - xBuf) < 100 && Math.Abs(x - xBuf) < 100)
+                {
+                    x = xBuf;
+                    y = yBuf;
+                }
+
                 obstRange = Convert.ToInt32(dataArr[2]);
                 facing = Convert.ToDouble(dataArr[3]);
             }
@@ -276,6 +290,9 @@ namespace RobotControl
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             // Посылка dist1,dist2,cm,facing
+
+            OnDataRecievedExternal(this, null);
+
             try
             {
                 // Иногда приходит не целиком и валится. Хз почиму. Серийник же...
