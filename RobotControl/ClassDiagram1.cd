@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="RobotControl.CreateRobotDialog">
+    <Position X="7.25" Y="5.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>CAAAEBAAACAEABAAAACBAAACAAABAEAAAQBgAAAAAAA=</HashCode>
+      <FileName>CreateRobotDialog.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.MainView">
+    <Position X="2.5" Y="1.25" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>BQYSEAEQACAQABIAYACABBAGAAAAIABCAAAAAQggAgE=</HashCode>
+      <FileName>MainView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Map">
+    <Position X="7.25" Y="1.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>BAYAAAAIAAAAIAzEQAABCCAAAAAAAAAAAQAAAABAAgA=</HashCode>
+      <FileName>Map.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Program">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Resources" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABCAAAAAAAAJEAAABQAAAAAACAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Robot">
+    <Position X="9.75" Y="1.25" Width="4" />
+    <NestedTypes>
+      <Delegate Name="RobotControl.Robot.RobotDelegate">
+        <TypeIdentifier>
+          <NewMemberFileName>Robot.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAQAhDCCQIAAAggAAAEDCAAAAAIIACgABIJwEkAAIgA=</HashCode>
+      <FileName>Robot.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Properties.Resources" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RobotControl.Properties.Settings" Collapsed="true">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAIAAAAAABAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

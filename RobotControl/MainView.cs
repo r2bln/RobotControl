@@ -91,5 +91,15 @@ namespace RobotControl
         {
             map.Reconnect();
         }
+
+        private void MainView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                Robot newRobot = new Robot(250, 250, 0, 0, 0,"127.0.0.1", 666);
+                newRobot.ConnectIp();
+                map.AddRobot(newRobot);
+            }
+        }
     }
 }

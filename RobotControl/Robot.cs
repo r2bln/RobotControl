@@ -30,6 +30,7 @@ namespace RobotControl
         private double dist2;
         private string address;
         private string portName;
+        // Экземпляр последовательного порта
         private SerialPort port;
         private Socket s;
         private Bitmap robotBmp = new Bitmap(Resources.Robot);
@@ -52,6 +53,8 @@ namespace RobotControl
             facing = 0;
         }
 
+
+        // Конструктор при работе по последовательному порту
         public Robot(int _x, int _y, double _dist1, double _dist2, double _facing, string _portName)
         {
             x = _x;
@@ -71,6 +74,7 @@ namespace RobotControl
         {
             x = _x;
             y = _y;
+            facing = _facing;
             xBuf = _x;
             yBuf = _y;
             dist1 = _dist1;
@@ -229,7 +233,6 @@ namespace RobotControl
                     x = xBuf;
                     y = yBuf;
                 }
-
                 obstRange = Convert.ToInt32(dataArr[2]);
                 facing = Convert.ToDouble(dataArr[3]);
             }
@@ -295,12 +298,18 @@ namespace RobotControl
 
             try
             {
-                // Иногда приходит не целиком и валится. Хз почиму. Серийник же...
-                data = port.ReadLine();
-                var dataArr = data.Split(',');
-                dist1 = Convert.ToDouble(dataArr[0]);
-                dist2 = Convert.ToDouble(dataArr[1]);
+                data = Encoding.ASCII.GetString(buf);
+                var dataArr = data.Split('|');
+                xBuf = float.Parse(dataArr[0], CultureInfo.InvariantCulture.NumberFormat);
+                yBuf = float.Parse(dataArr[1], CultureInfo.InvariantCulture.NumberFormat);
+
+                if (Math.Abs(x - xBuf) < 100 && Math.Abs(x - xBuf) < 100)
+                {
+                    x = xBuf;
+                    y = yBuf;
+                }
                 obstRange = Convert.ToInt32(dataArr[2]);
+                facing = Convert.ToDouble(dataArr[3]);
             }
             catch
             {
